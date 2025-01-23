@@ -43,7 +43,7 @@ CREATE TABLE `bookings` (
 
 CREATE TABLE `car` (
   `id` int(11) NOT NULL,
-  `Brand` varchar(100) NOT NULL,
+  `brand` varchar(100) NOT NULL,
   `model` varchar(100) NOT NULL,
   `fuel` varchar(100) NOT NULL,
   `engine` varchar(100) NOT NULL,
@@ -104,7 +104,7 @@ ALTER TABLE `car`
 ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `password` (`password`),
-  ADD UNIQUE KEY `Email` (`Email`),
+  ADD UNIQUE KEY `email` (`email`),
   ADD UNIQUE KEY `id` (`id`);
 
 --
