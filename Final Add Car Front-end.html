@@ -80,6 +80,7 @@
 						"Content-Type": "application/json"
 					},
 					"data": JSON.stringify({
+						"id": document.getElementById("id").value,
 						"brand": document.getElementById("brand").value,
 						"model": document.getElementById("model").value,
 						"fuel": document.getElementById("fuel").value,
@@ -112,7 +113,7 @@
                     delete params[key];
                 }
             });
-
+			
             // Send an AJAX GET request to the search API
             $.ajax({
                 url: "http://localhost:8080/home/dealerships/cars/searchCar",
@@ -148,6 +149,10 @@
 		<br><br>
 
 		<table>
+			<tr>
+				<td> Id: </td>
+				<td> <input type='text' id='id' />
+			</tr>
 			<tr>
 				<td> Brand: </td>
 				<td> <input type='text' id='brand' />
