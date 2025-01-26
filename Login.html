@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+
+        <form id="login-form" action="" method="post">
+            <div class="form-group">
+                <label for="user-type">User Type</label>
+                <select id="user-type" name="userType">
+                    <option value="customer">Customer</option>
+                    <option value="dealership">Dealership</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="button">Login</button>
+        </form>
+
+        <a href="/home" class="link">Back to Home</a>
+    </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const userTypeSelect = document.getElementById('user-type');
+
+        userTypeSelect.addEventListener('change', (e) => {
+            const userType = e.target.value;
+
+            if (userType === 'customer') {
+                form.action = 'http://localhost:8080/home/customers/login';
+            } else if (userType === 'dealership') {
+                form.action = 'http://localhost:8080/home/dealerships/login';
+            }
+        });
+
+        // Set initial action
+        form.action = 'http://localhost:8080/home/customers/login'; 
+		
+    </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="form-title">Signup</h1>
+
+        <form id="signup-login-form" method="post">
+            <div class="form-group">
+                <label for="user-type">User Type</label>
+                <select id="user-type" name="userType">
+                    <option value="customer">Customer</option>
+                    <option value="dealership">Dealership</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id">ID</label>
+                <input type="text" id="id" name="id" required>
+            </div>
+
+            <div class="form-group" id="name-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name">
+            </div>
+
+            <div class="form-group" id="lastname-group">
+                <label for="lastname">Last Name</label>
+                <input type="text" id="lastname" name="lastname">
+            </div>
+
+            <div class="form-group" id="dname-group" style="display: none;">
+                <label for="dname">Dealership Name</label>
+                <input type="text" id="dname" name="dname">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="button">Submit</button>
+        </form>
+
+        <a href="/home" class="link">Back to Home</a>
+    </div>
+
+    <script>
+        const formTitle = document.getElementById('form-title');
+        const form = document.getElementById('signup-login-form');
+        const userTypeSelect = document.getElementById('user-type');
+        const nameGroup = document.getElementById('name-group');
+        const lastnameGroup = document.getElementById('lastname-group');
+        const dnameGroup = document.getElementById('dname-group');
+
+        userTypeSelect.addEventListener('change', (e) => {
+            const userType = e.target.value;
+
+            if (userType === 'customer') {
+                formTitle.textContent = 'Customer Signup';
+                form.dataset.action = 'http://localhost:8080/home/customers/signup';
+                nameGroup.style.display = 'block';
+                lastnameGroup.style.display = 'block';
+                dnameGroup.style.display = 'none';
+                document.getElementById('dname').value = '';
+			} else if (userType === 'dealership') {
+                formTitle.textContent = 'Dealership Signup';
+                form.dataset.action = 'http://localhost:8080/home/dealerships/signup';
+                nameGroup.style.display = 'none';
+                lastnameGroup.style.display = 'none';
+                dnameGroup.style.display = 'block';
+                document.getElementById('name').value = '';
+                document.getElementById('lastname').value = '';
+			}
+        });
+
+        // Set initial state
+        formTitle.textContent = 'Customer Signup';
+        form.dataset.action = 'http://localhost:8080/home/customers/signup'; 
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            console.log('Submitting data:', data);
+
+            const response = await fetch(form.dataset.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                alert('Signup successful');
+            } else {
+                alert('Signup failed');
+            }
+        });
+    </script>
+</body>
+</html>
