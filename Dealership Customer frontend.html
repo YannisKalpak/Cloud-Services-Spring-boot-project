@@ -1,0 +1,166 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<html>
+	<head>
+	</head>
+	<body onload='showAll();'>
+		<script>
+		
+			function showAll() {
+				var settings = {
+					"url": "http://localhost:8080/home/customers/allCars",
+					"method": "GET",
+					"timeout": 0,
+					"processData": false,
+					"mimeType": "multipart/form-data",
+					"contentType": false
+				};
+				$.ajax(settings).done(function (response) {
+					updateTable(response);
+				});
+			}
+
+			function updateTable(json) {
+				const result = jQuery.parseJSON(json);
+				const table = document.getElementById("resultsTable");
+
+				// Clear existing rows
+				const rowCount = table.rows.length;
+				for (let i = rowCount - 1; i > 0; i--) {
+					table.deleteRow(i);
+				}
+
+				// Populate the table
+				result.forEach(car => {
+					const row = table.insertRow(-1);
+					row.insertCell(0).innerHTML = car.brand;
+					row.insertCell(1).innerHTML = car.model;
+					row.insertCell(2).innerHTML = car.fuel;
+					row.insertCell(3).innerHTML = car.engine;
+					row.insertCell(4).innerHTML = car.info;
+					row.insertCell(5).innerHTML = car.seats;
+					row.insertCell(6).innerHTML = car.price;
+					row.insertCell(7).innerHTML = car.numOfCars;
+				});
+			}
+			 
+			function updateSearchResults(cars) {
+			const tableBody = document.querySelector("#searchResultsTable tbody");
+
+			// Clear all existing rows in the table body
+			tableBody.innerHTML = "";
+
+			// Add rows for each car in the response
+			cars.forEach(car => {
+				const row = document.createElement("tr");
+
+				row.innerHTML = `
+					<td>${car.brand}</td>
+					<td>${car.model}</td>
+					<td>${car.fuel}</td>
+					<td>${car.engine}</td>
+					<td>${car.info}</td>
+					<td>${car.seats}</td>
+					<td>${car.price}</td>
+					<td>${car.numOfCars}</td>
+				`;
+
+				tableBody.appendChild(row);
+			});
+		}
+			
+			function searchCars() {
+            // Collect search parameters
+            const params = {
+                brand: document.getElementById("searchBrand").value,
+                model: document.getElementById("searchModel").value,
+                fuel: document.getElementById("searchFuel").value,
+                engine: document.getElementById("searchEngine").value,
+                seats: document.getElementById("searchSeats").value,
+                price: document.getElementById("searchPrice").value
+            };
+
+            // Remove empty parameters
+            Object.keys(params).forEach(key => {
+                if (!params[key]) {
+                    delete params[key];
+                }
+            });
+			
+            // Send an AJAX GET request to the search API
+            $.ajax({
+                url: "http://localhost:8080/home/customers/cars/searchCar",
+                method: "GET",
+                data: params,
+                success: function (response) {
+                    updateSearchResults(response);
+                },
+                error: function () {
+                    alert("An error occurred while searching for cars.");
+                }
+            });
+        }
+		
+		</script>	
+		
+		<h1> All Cars </h1>
+		<table border='1' id='resultsTable'>
+			<tr>
+				<th width='200'> Brand </th>
+				<th width='200'> Model </th>
+				<th width='200'> Fuel </th>
+				<th width='200'> Engine </th>
+				<th width='200'> Info </th>
+				<th width='200'> Seats </th>
+				<th width='200'> Price </th>
+				<th width='200'> NumOfCars </th>
+				
+				
+			</tr>
+		</table>
+
+		<br><br>
+
+		 <h1>Search for Cars</h1>
+    <form id="searchForm">
+        <label for="brand">Brand:</label>
+        <input type="text" id="searchBrand" name="brand"><br><br>
+
+        <label for="model">Model:</label>
+        <input type="text" id="searchModel" name="model"><br><br>
+
+        <label for="fuel">Fuel:</label>
+        <input type="text" id="searchFuel" name="fuel"><br><br>
+
+        <label for="engine">Engine:</label>
+        <input type="text" id="searchEngine" name="engine"><br><br>
+
+        <label for="seats">Seats:</label>
+        <input type="number" id="searchSeats" name="seats"><br><br>
+
+        <label for="price">Price:</label>
+        <input type="number" id="searchPrice" name="price"><br><br>
+
+        <button type="button" onclick="searchCars()">Search</button>
+    </form>
+	<h1>Search Results</h1>
+<!-- Second table for search results -->
+<table border="1" id="searchResultsTable">
+    <thead>
+        <tr>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Fuel</th>
+            <th>Engine</th>
+            <th>Info</th>
+            <th>Seats</th>
+            <th>Price</th>
+            <th>Number of Cars</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Rows for search results -->
+    </tbody>
+</table>
+	</body>
+</html>
