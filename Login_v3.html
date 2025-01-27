@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+         <h1 id="form-title">Login</h1>
+
+        <form id="login-form" method="post">
+            <div class="form-group">
+                <label for="user-type">User Type</label>
+                <select id="user-type" name="userType">
+                    <option value="customer">Customer</option>
+                    <option value="dealership">Dealership</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="button">Login</button>
+        </form>
+
+        <a href="/home" class="link">Back to Home</a>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        const formTitle = document.getElementById('form-title');
+		const form = document.getElementById('login-form');
+        const userTypeSelect = document.getElementById('user-type');
+        const notification = document.getElementById('notification');
+
+        userTypeSelect.addEventListener('change', (e) => {
+            const userType = e.target.value;
+
+            if (userType === 'customer') {
+                formTitle.textContent = 'Customer Login';
+				form.dataset.action = 'http://localhost:8080/home/customers/login';
+            } else if (userType === 'dealership') {
+                formTitle.textContent = 'Dealership Login';
+				form.dataset.action = 'http://localhost:8080/home/dealerships/login';
+            }
+        });
+
+         // Set initial action
+         formTitle.textContent = 'Customer Login';
+		 form.dataset.action = 'http://localhost:8080/home/customers/login'; 
+
+        form.addEventListener('submit', async (event) => {
+         event.preventDefault();
+
+    const formData = new FormData(form);
+    const data = userTypeSelect.value === 'customer'
+        ? { email: formData.get('email'), password: formData.get('password') }
+        : { email: formData.get('email'), password: formData.get('password') };
+
+    try {
+        const response = await fetch(form.dataset.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            const responseData = await response.json();
+            const userName = userTypeSelect.value === 'customer' ? responseData.name : responseData.dname;
+
+            // Show notification
+            notification.textContent = `Welcome, ${userName}!`;
+            notification.classList.add('show');
+
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        } else if (response.status === 401) {
+            notification.textContent = 'Invalid credentials. Please try again.';
+            notification.style.backgroundColor = 'red';
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.style.backgroundColor = '#007BFF';
+            }, 5000);
+        } else {
+            alert('Login failed. Please try again.');
+        }
+    } catch (error) {
+        alert('An error occurred: ' + error.message);
+    }
+});
+    </script>
+</body>
+</html>
