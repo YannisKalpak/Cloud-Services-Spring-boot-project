@@ -1,8 +1,98 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
 
-<html>
-	<head>
-	</head>
+        h1 {
+            text-align: center;
+            color: #444;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #007BFF;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        form input, form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        .container {
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
 	<body onload='showAll();'>
 		<script>
 		
@@ -70,166 +160,176 @@
 		}
 			
 			
-			function addCar() {		
-				
-				const settings = {
-					"url": "http://localhost:8080/home/dealerships/addCar",
-					"method": "POST",
-					"timeout": 0,
-					"headers": {
-						"Content-Type": "application/json"
-					},
-					"data": JSON.stringify({
-						"id": document.getElementById("id").value,
-						"brand": document.getElementById("brand").value,
-						"model": document.getElementById("model").value,
-						"fuel": document.getElementById("fuel").value,
-						"engine": document.getElementById("engine").value,
-						"info": document.getElementById("info").value,
-						"seats": document.getElementById("seats").value,
-						"price": document.getElementById("price").value,
-						"numOfCars": document.getElementById("numOfCars").value
-					}),
+			function addCar() {
+				const params = {
+					id: document.getElementById("id").value,
+					brand: document.getElementById("brand").value,
+					model: document.getElementById("model").value,
+					fuel: document.getElementById("fuel").value,
+					engine: document.getElementById("engine").value,
+					info: document.getElementById("info").value,
+					seats: document.getElementById("seats").value,
+					price: document.getElementById("price").value,
+					numOfCars: document.getElementById("numOfCars").value
 				};
 
-				$.ajax(settings).done(function () {
-					showAll();
+				// Send the AJAX POST request
+				$.ajax({
+					url: "http://localhost:8080/home/dealerships/addCar", // Adjust endpoint as necessary
+					method: "POST",
+					contentType: "application/json",
+					data: JSON.stringify(params),
+					success: function () {
+						alert("Car added successfully!"); // Alert for success
+						showAll(); // Refresh the car list
+					},
+					error: function () {
+						alert("Failed to add car. Please check your input or try again.");
+					}
 				});
 			}
 			function searchCars() {
-            // Collect search parameters
-            const params = {
-                brand: document.getElementById("searchBrand").value,
-                model: document.getElementById("searchModel").value,
-                fuel: document.getElementById("searchFuel").value,
-                engine: document.getElementById("searchEngine").value,
-                seats: document.getElementById("searchSeats").value,
-                price: document.getElementById("searchPrice").value
-            };
+				// Collect search parameters
+				const params = {
+					brand: document.getElementById("searchBrand").value,
+					model: document.getElementById("searchModel").value,
+					fuel: document.getElementById("searchFuel").value,
+					engine: document.getElementById("searchEngine").value,
+					seats: document.getElementById("searchSeats").value,
+					price: document.getElementById("searchPrice").value
+				};
 
-            // Remove empty parameters
-            Object.keys(params).forEach(key => {
-                if (!params[key]) {
-                    delete params[key];
-                }
-            });
-			
-            // Send an AJAX GET request to the search API
-            $.ajax({
-                url: "http://localhost:8080/home/dealerships/cars/searchCar",
-                method: "GET",
-                data: params,
-                success: function (response) {
-                    updateSearchResults(response);
-                },
-                error: function () {
-                    alert("An error occurred while searching for cars.");
-                }
-            });
-        }
+				// Remove empty parameters
+				Object.keys(params).forEach(key => {
+					if (!params[key]) {
+						delete params[key];
+					}
+				});
+
+				// Send the AJAX GET request
+				$.ajax({
+					url: "http://localhost:8080/home/dealerships/cars/searchCar",
+					method: "GET",
+					data: params,
+					success: function (response) {
+						if (response.length === 0) {
+							alert("No cars found for the given search criteria."); // Alert for no results
+						} else {
+							updateSearchResults(response); // Populate the search results table
+						}
+					},
+					error: function () {
+						alert("An error occurred while searching for cars. Please try again.");
+					}
+				});
+			}
 		
 		</script>	
 		
-		<h1> All Cars </h1>
-		<table border='1' id='resultsTable'>
-			<tr>
-				<th width='200'> Brand </th>
-				<th width='200'> Model </th>
-				<th width='200'> Fuel </th>
-				<th width='200'> Engine </th>
-				<th width='200'> Info </th>
-				<th width='200'> Seats </th>
-				<th width='200'> Price </th>
-				<th width='200'> NumOfCars </th>
-				
-				
-			</tr>
-		</table>
+		<div class="container">
+    <h1>All Cars</h1>
+    <div class="section">
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Fuel</th>
+                    <th>Engine</th>
+                    <th>Info</th>
+                    <th>Seats</th>
+                    <th>Price</th>
+                    <th>Number of Cars</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows populated dynamically -->
+            </tbody>
+        </table>
+    </div>
 
 		<br><br>
 
-		<table>
-			<tr>
-				<td> Id: </td>
-				<td> <input type='text' id='id' />
-			</tr>
-			<tr>
-				<td> Brand: </td>
-				<td> <input type='text' id='brand' />
-			</tr>
-			<tr>
-				<td> Model: </td>
-				<td> <input type='text' id='model' />
-			</tr>
-			<tr>
-				<td> Fuel: </td>
-				<td> <input type='text' id='fuel' />
-			</tr>
-			<tr>
-				<td> Engine: </td>
-				<td> <input type='text' id='engine' />
-			</tr>
-			<tr>
-				<td> Info: </td>
-				<td> <input type='text' id='info' />
-			</tr>
-			<tr>
-				<td> Seats: </td>
-				<td> <input type='text' id='seats' />
-			</tr>
-			<tr>
-				<td> Price: </td>
-				<td> <input type='text' id='price' />
-			</tr>
-			<tr>
-				<td> NumOfCars: </td>
-				<td> <input type='text' id='numOfCars' />
-			</tr>
-		</table>
-		<button name='addCar' onclick="addCar();"> Add Car </button>		
+		 <h1>Add a Car</h1>
+    <div class="section">
+        <form id="addCarForm">
+            <label for="id">ID:</label>
+            <input type="text" id="id" placeholder="Enter Car ID" />
+
+            <label for="brand">Brand:</label>
+            <input type="text" id="brand" placeholder="Enter Car Brand" />
+
+            <label for="model">Model:</label>
+            <input type="text" id="model" placeholder="Enter Car Model" />
+
+            <label for="fuel">Fuel:</label>
+            <input type="text" id="fuel" placeholder="Enter Fuel Type" />
+
+            <label for="engine">Engine:</label>
+            <input type="text" id="engine" placeholder="Enter Engine Type" />
+
+            <label for="info">Info:</label>
+            <input type="text" id="info" placeholder="Additional Info" />
+
+            <label for="seats">Seats:</label>
+            <input type="number" id="seats" placeholder="Number of Seats" />
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" placeholder="Price" />
+
+            <label for="numOfCars">Number of Cars:</label>
+            <input type="number" id="numOfCars" placeholder="Number of Cars" />
+
+            <button type="button" onclick="addCar();">Add Car</button>
+        </form>
+    </div>
 		
 		<br><br>
 
 		 <h1>Search for Cars</h1>
-    <form id="searchForm">
-        <label for="brand">Brand:</label>
-        <input type="text" id="searchBrand" name="brand"><br><br>
+    <div class="section">
+        <form id="searchForm">
+            <label for="searchBrand">Brand:</label>
+            <input type="text" id="searchBrand" placeholder="Enter Car Brand" />
 
-        <label for="model">Model:</label>
-        <input type="text" id="searchModel" name="model"><br><br>
+            <label for="searchModel">Model:</label>
+            <input type="text" id="searchModel" placeholder="Enter Car Model" />
 
-        <label for="fuel">Fuel:</label>
-        <input type="text" id="searchFuel" name="fuel"><br><br>
+            <label for="searchFuel">Fuel:</label>
+            <input type="text" id="searchFuel" placeholder="Enter Fuel Type" />
 
-        <label for="engine">Engine:</label>
-        <input type="text" id="searchEngine" name="engine"><br><br>
+            <label for="searchEngine">Engine:</label>
+            <input type="text" id="searchEngine" placeholder="Enter Engine Type" />
 
-        <label for="seats">Seats:</label>
-        <input type="number" id="searchSeats" name="seats"><br><br>
+            <label for="searchSeats">Seats:</label>
+            <input type="number" id="searchSeats" placeholder="Number of Seats" />
 
-        <label for="price">Price:</label>
-        <input type="number" id="searchPrice" name="price"><br><br>
+            <label for="searchPrice">Price:</label>
+            <input type="number" id="searchPrice" placeholder="Price" />
 
-        <button type="button" onclick="searchCars()">Search</button>
-    </form>
+            <button type="button" onclick="searchCars();">Search</button>
+        </form>
+    </div>
 	<h1>Search Results</h1>
-<!-- Second table for search results -->
-<table border="1" id="searchResultsTable">
-    <thead>
-        <tr>
-            <th>Brand</th>
-            <th>Model</th>
-            <th>Fuel</th>
-            <th>Engine</th>
-            <th>Info</th>
-            <th>Seats</th>
-            <th>Price</th>
-            <th>Number of Cars</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Rows for search results -->
-    </tbody>
-</table>
+    <div class="section">
+        <table id="searchResultsTable">
+            <thead>
+                <tr>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Fuel</th>
+                    <th>Engine</th>
+                    <th>Info</th>
+                    <th>Seats</th>
+                    <th>Price</th>
+                    <th>Number of Cars</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows for search results -->
+            </tbody>
+        </table>
+    </div>
+</div>
 	</body>
 </html>
