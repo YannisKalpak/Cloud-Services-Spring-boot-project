@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `bookings` (
   `id` int(11) NOT NULL,
   `costumer_id` int(11) NOT NULL,
-  `car_id` varchar(100) NOT NULL,
+  `car_id` int(11) NOT NULL,
   `booking_date` date NOT NULL,
   `booking_time` time(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
