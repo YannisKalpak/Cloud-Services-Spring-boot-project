@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Dealership - Book or Buy a Car</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+			background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Our Dealership</h1>
+
+        <h2>Book a Car</h2>
+        <form id="bookingForm">
+            <label for="customerId">Customer ID:</label>
+            <input type="text" id="customerId" name="customerId" required>
+
+            <label for="carId">Car ID:</label>
+            <input type="text" id="carId" name="carId" required>
+
+            <label for="bookingDate">Booking Date:</label>
+            <input type="date" id="bookingDate" name="bookingDate" required>
+
+            <label for="bookingTime">Booking Time:</label>
+            <input type="time" id="bookingTime" name="bookingTime" required>
+
+            <button type="submit">Book Now</button>
+        </form>
+
+        <h2>Buy a Car</h2>
+        <form id="buyCarForm">
+            <label for="carToBuyId">Car ID:</label>
+            <input type="text" id="carToBuyId" name="carToBuyId" required>
+
+            <label for="customerToBuyId">Customer ID:</label>
+            <input type="text" id="customerToBuyId" name="customerToBuyId" required>
+
+            <button type="submit">Buy Now</button>
+        </form>
+    </div>
+
+    <script>
+        const backendBaseUrl = 'http://localhost:8080/home/customers'; // Replace with your Spring Boot base URL
+
+        // Booking Form Submission
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const bookingData = {
+                customer_id: document.getElementById('customerId').value,
+                car_id: document.getElementById('carId').value,
+                date: document.getElementById('bookingDate').value,
+                time: document.getElementById('bookingTime').value
+            };
+
+            try {
+                const response = await fetch(`${backendBaseUrl}/bookings/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Booking confirmed! Booking ID: ${result.id}`);
+                } else {
+                    throw new Error('Failed to create booking. Please check your input.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+            }
+        });
+
+        // Buy Car Form Submission
+        document.getElementById('buyCarForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const buyCarData = {
+                customer_id: document.getElementById('customerToBuyId').value,
+                car_id: document.getElementById('carToBuyId').value
+            };
+
+            try {
+                const response = await fetch(`${backendBaseUrl}/cars/buyCar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(buyCarData)
+                });
+
+                if (response.ok) {
+                    alert('Car purchased successfully!');
+                } else {
+                    throw new Error('Failed to buy car. Please check your input.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
