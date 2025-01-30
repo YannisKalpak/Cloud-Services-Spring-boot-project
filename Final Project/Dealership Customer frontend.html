@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dealership Customer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #007BFF;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        form input, form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        .container {
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body onload='showAll();'>
+    <h1>All Cars</h1>
+    <table id='resultsTable'>
+        <tr>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Fuel</th>
+            <th>Engine</th>
+            <th>Info</th>
+            <th>Seats</th>
+            <th>Price</th>
+            <th>NumOfCars</th>
+        </tr>
+    </table>
+
+    <h1>Search for Cars</h1>
+    <form id="searchForm">
+        <label for="searchBrand">Brand:</label>
+        <input type="text" id="searchBrand" name="brand">
+
+        <label for="searchModel">Model:</label>
+        <input type="text" id="searchModel" name="model">
+
+        <label for="searchFuel">Fuel:</label>
+        <input type="text" id="searchFuel" name="fuel">
+
+        <label for="searchEngine">Engine:</label>
+        <input type="text" id="searchEngine" name="engine">
+
+        <label for="searchSeats">Seats:</label>
+        <input type="number" id="searchSeats" name="seats">
+
+        <label for="searchPrice">Price:</label>
+        <input type="number" id="searchPrice" name="price">
+
+        <button type="button" onclick="searchCars()">Search</button>
+    </form>
+
+    <h1>Search Results</h1>
+    <table id="searchResultsTable">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Fuel</th>
+                <th>Engine</th>
+                <th>Info</th>
+                <th>Seats</th>
+                <th>Price</th>
+                <th>Number of Cars</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows for search results -->
+        </tbody>
+    </table>
+
+    <script>
+        function showAll() {
+            var settings = {
+                "url": "http://localhost:8080/home/customers/allCars",
+                "method": "GET",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false
+            };
+            $.ajax(settings).done(function (response) {
+                updateTable(response);
+            });
+        }
+
+        function updateTable(json) {
+            const result = jQuery.parseJSON(json);
+            const table = document.getElementById("resultsTable");
+
+            // Clear existing rows
+            const rowCount = table.rows.length;
+            for (let i = rowCount - 1; i > 0; i--) {
+                table.deleteRow(i);
+            }
+
+            // Populate the table
+            result.forEach(car => {
+                const row = table.insertRow(-1);
+                row.insertCell(0).innerHTML = car.brand;
+                row.insertCell(1).innerHTML = car.model;
+                row.insertCell(2).innerHTML = car.fuel;
+                row.insertCell(3).innerHTML = car.engine;
+                row.insertCell(4).innerHTML = car.info;
+                row.insertCell(5).innerHTML = car.seats;
+                row.insertCell(6).innerHTML = car.price;
+                row.insertCell(7).innerHTML = car.numOfCars;
+            });
+        }
+
+        function updateSearchResults(cars) {
+            const tableBody = document.querySelector("#searchResultsTable tbody");
+
+            // Clear all existing rows in the table body
+            tableBody.innerHTML = "";
+
+            // Add rows for each car in the response
+            cars.forEach(car => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${car.brand}</td>
+                    <td>${car.model}</td>
+                    <td>${car.fuel}</td>
+                    <td>${car.engine}</td>
+                    <td>${car.info}</td>
+                    <td>${car.seats}</td>
+                    <td>${car.price}</td>
+                    <td>${car.numOfCars}</td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        function searchCars() {
+            // Collect search parameters
+            const params = {
+                brand: document.getElementById("searchBrand").value,
+                model: document.getElementById("searchModel").value,
+                fuel: document.getElementById("searchFuel").value,
+                engine: document.getElementById("searchEngine").value,
+                seats: document.getElementById("searchSeats").value,
+                price: document.getElementById("searchPrice").value
+            };
+
+            // Remove empty parameters
+            Object.keys(params).forEach(key => {
+                if (!params[key]) {
+                    delete params[key];
+                }
+            });
+
+            // Send an AJAX GET request to the search API
+            $.ajax({
+                url: "http://localhost:8080/home/customers/cars/searchCar",
+                method: "GET",
+                data: params,
+                success: function (response) {
+                    updateSearchResults(response);
+                },
+                error: function () {
+                    alert("An error occurred while searching for cars.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
